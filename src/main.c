@@ -1,25 +1,30 @@
+#define _GNU_SOURCE
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <sys/sendfile.h>
 
-// compile command : gcc src/main.c -o -std=c17 test
+// compile command : gcc src/main.c -std=c17 -o test
 
 // execute command : ./test
 
 int main(int words_num,char** words){
-  if (words_num < 2){return -1;}
+  if (words_num < 3){return -1;}
 
-  int fd =open(words[1],O_RDONLY);
+  int in_fd =open(words[1],O_RDONLY);
+  int out_fd =  open(words[2],O_WRONLY);
   
-  if (fd==-1){return -1;};
+  if (in_fd==-1 || out_fd ==-1 ){return -1;};
   
   struct stat fd_st;
   
-  fstat(fd,&fd_st);
+  fstat(in_fd,&fd_st);
   
-  sendfile(1,fd,0,fd_st.st_size);
+  copy_file_range(in_fd,0
+                  ,out_fd,0
+                  ,fd_st.st_size,0);
   
-  close(fd);
+  
+  close(in_fd);
+  close(out_fd);
     
 }
